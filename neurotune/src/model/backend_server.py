@@ -1,8 +1,10 @@
+# backend.py
 from flask import Flask, jsonify
 from flask_socketio import SocketIO
 from flask_cors import CORS
 import time
 import threading
+import random  # Correct module for random data generation
 
 class BackendServer:
     def __init__(self):
@@ -10,40 +12,60 @@ class BackendServer:
         CORS(self.app)
         self.socketio = SocketIO(self.app, cors_allowed_origins="*")
 
-        # add paths for static data
+        # Add routes
         self.app.route("/")(self.hello_world)
-    
-    # example for sending static data to frontend
+
+    # Static route for testing
     def hello_world(self):
         return jsonify({'sample_data': 'Hello, World!'})
-    
-    # example for sending dynamic data to frontend
+
+    # Emit time_data1 every second
     def send_time_data1(self):
         while True:
-            self.socketio.emit('time_data1', {'message': 'Hello from Flask at: ' + str(time.time())})
+            message = {'message': f'Hello from Flask at: {time.time()}'}
+            self.socketio.emit('time_data1', message)
             time.sleep(1)
-    
-    # example for sending dynamic data to frontend
+
+    # Emit time_data2 every 5 seconds
     def send_time_data2(self):
         while True:
-            self.socketio.emit('time_data2', {'message': 'Hello from Flask at: ' + str(time.time())})
+            message = {'message': f'Hello from Flask at: {time.time()}'}
+            self.socketio.emit('time_data2', message)
             time.sleep(5)
 
+    # Emit fake EEG data every second
+    def send_fake_eeg_data(self):
+        while True:
+            eeg_data = {
+                'timestamp': time.time(),
+                'values': {
+                    'a': [random.uniform(-100, 100) for _ in range(200)],
+                    'b': [random.uniform(-100, 100) for _ in range(200)],
+                    'c': [random.uniform(-100, 100) for _ in range(200)],
+                    'd': [random.uniform(-100, 100) for _ in range(200)]
+                }
+            }
+
+            self.socketio.emit("eeg_data", eeg_data)
+            time.sleep(2)
+
     def run(self):
-        # example for threading multiple data streams
-        # define functions for threading
-        thread1 = threading.Thread(target=self.send_time_data1)
-        thread2 = threading.Thread(target=self.send_time_data2)
+        # Create threads for emitting data
+        thread_time1 = threading.Thread(target=self.send_time_data1)
+        thread_time2 = threading.Thread(target=self.send_time_data2)
+        thread_eeg = threading.Thread(target=self.send_fake_eeg_data)
 
-        # set threads as daemon
-        thread1.daemon = True
-        thread2.daemon = True
+        # Set threads as daemon so they exit when the main thread does
+        thread_time1.daemon = True
+        thread_time2.daemon = True
+        thread_eeg.daemon = True
 
-        # start threads
-        thread1.start()
-        thread2.start()
+        # Start threads
+        thread_time1.start()
+        thread_time2.start()
+        thread_eeg.start()
 
-        # run server
+        # Run the SocketIO server
         self.socketio.run(self.app, port=5000)
 
 if __name__ == '__main__':
