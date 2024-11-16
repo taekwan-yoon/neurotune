@@ -1,7 +1,7 @@
-const StartAnalysis = ({ startAnalysis }) => {
+const StartAnalysis = () => {
   return (
     <div>
-      <button onClick={startAnalysis}>Start Analysis</button>
+      <button>Start Analysis</button>
     </div>
   );
 };

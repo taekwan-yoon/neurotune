@@ -1,9 +1,9 @@
-import MusicUploader from "../controller/MusicUploader";
+import MusicPlayer from "../controller/MusicPlayer";
 
 const MusicContainer = () => {
   return (
     <div>
-      <MusicUploader />
+      <MusicPlayer />
     </div>
   );
 };
