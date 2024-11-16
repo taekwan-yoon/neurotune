@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
+import StartRecordingButton from "./StartRecordingButton";
+import StopRecordingButton from "./StopRecordingButton";
 
 function FetchDataExample() {
   const [sampleData, setSampleData] = useState(null);
@@ -31,7 +33,7 @@ function FetchDataExample() {
   // Function to stop the EEG recording (disconnect the socket)
   function stopEEG() {
     if (socketRef.current) {
-      socketRef.current.emit('stop_eeg');
+      socketRef.current.emit("stop_eeg");
       socketRef.current.disconnect();
       socketRef.current = null; // Reset the ref to null to allow reconnection
     }
@@ -40,11 +42,10 @@ function FetchDataExample() {
   return (
     <div>
       <h1>NeuroTune</h1>
-      <button onClick={startEEG}>Start Recording</button>
-      <button onClick={stopEEG}>Stop Recording</button>
-      <p>
-        {EEG_data ? EEG_data : "Loading..."}
-      </p>
+
+      <p>{EEG_data ? EEG_data : "Loading..."}</p>
+      <StartRecordingButton startEEG={startEEG} />
+      <StopRecordingButton stopEEG={stopEEG} />
     </div>
   );
 }
