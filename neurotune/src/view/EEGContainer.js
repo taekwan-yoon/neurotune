@@ -1,7 +1,9 @@
+import EEGGraph from "../controller/EEGGraph";
+
 const EEGContainer = () => {
   return (
     <div>
-      <h1>EEGContainer</h1>
+      <EEGGraph />
     </div>
   );
 };
