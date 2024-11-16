@@ -22,4 +22,6 @@ yarn-error.log*
 
 # virtual environment
 /venv
-/src/.env
+.env
+/src/model/brainflow-master
+/src/build

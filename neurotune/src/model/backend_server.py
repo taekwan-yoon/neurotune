@@ -64,9 +64,9 @@ class BackendServer:
         eeg_object.init_board()
 
         while not self.stop:
-            data = eeg_object.start_eeg(1)  # Collect EEG data for 1 second
+            data = eeg_object.start_eeg(1.5)  # Collect EEG data for 1 second
             self.socketio.emit('eeg_data', data)  # Emit EEG data to frontend
-            time.sleep(1)
+            time.sleep(0.5)
 
             '''
             // [{"ch1 - AF7":325.9210614385,"ch2 - AF8":422.8817076897,"ch3 - TP9":35.1251403838,"ch4 - TP10":197.6649323581,"timestamp":1731732867.2994301319},

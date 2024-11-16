@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "crypto-browserify": "^3.12.1",
     "dotenv": "^16.4.5",
+    "echarts": "^5.5.1",
     "echarts-for-react": "^3.0.2",
     "lyrics-finder": "^21.7.0",
     "os-browserify": "^0.3.0",

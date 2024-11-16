@@ -13,9 +13,9 @@ function App() {
       <MusicContainer />
       <EEGContainer />
       <OutputContainer />
-      <FetchDataExample />
-      <StartAnalysis />
-      <EndAnalysis />
+      {/* <FetchDataExample /> */}
+      {/* <StartAnalysis />
+      <EndAnalysis /> */}
     </div>
   );
 }
