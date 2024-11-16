@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
 
-const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
+const SOCKET_SERVER_URL = "http://127.0.0.1:5000/"; // Update if different
 
 const EEGGraph = () => {
   const socketRef = useRef();
@@ -12,12 +12,11 @@ const EEGGraph = () => {
 
   // Initialize data storage
   const dataBuffer = useRef({
-    channels: {
-      "ch1 - AF7": [],
-      "ch2 - AF8": [],
-      "ch3 - TP9": [],
-      "ch4 - TP10": [],
-    },
+    timestamps: [],
+    channels: channelNames.reduce((acc, channelName) => {
+      acc[channelName] = [];
+      return acc;
+    }, {}),
   });
 
   // Flag to control when to update the chart
@@ -32,27 +31,28 @@ const EEGGraph = () => {
     });
 
     socketRef.current.on("eeg_data", (eegDataArray) => {
-      eegDataArray.forEach((entry) => {
-        const timestampMs = entry.timestamp * 1000;
+      eegDataArray.forEach((dataPoint) => {
+        const { timestamp } = dataPoint;
+        const timeString = new Date(timestamp * 1000).toLocaleTimeString();
 
-        // Append channel data with timestamp
-        channelNames.forEach((channel) => {
-          dataBuffer.current.channels[channel].push([
-            timestampMs,
-            entry[channel],
-          ]);
+        dataBuffer.current.timestamps.push(timeString);
+
+        channelNames.forEach((channelName) => {
+          dataBuffer.current.channels[channelName].push(dataPoint[channelName]);
         });
       });
 
       // Maintain only the latest 600 data points (3 seconds at 200 Hz)
       const maxDataPoints = 600;
-      channelNames.forEach((channel) => {
-        if (dataBuffer.current.channels[channel].length > maxDataPoints) {
-          const excess =
-            dataBuffer.current.channels[channel].length - maxDataPoints;
-          dataBuffer.current.channels[channel].splice(0, excess);
+      if (dataBuffer.current.timestamps.length > maxDataPoints) {
+        const excess = dataBuffer.current.timestamps.length - maxDataPoints;
+        dataBuffer.current.timestamps.splice(0, excess);
+        for (let key in dataBuffer.current.channels) {
+          if (dataBuffer.current.channels.hasOwnProperty(key)) {
+            dataBuffer.current.channels[key].splice(0, excess);
+          }
         }
-      });
+      }
 
       // Throttle chart updates using requestAnimationFrame
       if (!updatePending.current) {
@@ -60,9 +60,12 @@ const EEGGraph = () => {
         requestAnimationFrame(() => {
           if (chartRef.current) {
             const option = {
-              series: channelNames.map((channel) => ({
-                name: channel,
-                data: dataBuffer.current.channels[channel],
+              xAxis: {
+                data: dataBuffer.current.timestamps,
+              },
+              series: channelNames.map((channelName) => ({
+                name: channelName,
+                data: dataBuffer.current.channels[channelName],
               })),
             };
             chartRef.current.getEchartsInstance().setOption(option, {
@@ -104,26 +107,27 @@ const EEGGraph = () => {
       containLabel: true,
     },
     xAxis: {
-      type: "time",
+      type: "category",
       boundaryGap: false,
+      data: dataBuffer.current.timestamps,
     },
     yAxis: {
       type: "value",
     },
-    series: channelNames.map((channel, idx) => ({
-      name: channel,
+    series: channelNames.map((channelName, idx) => ({
+      name: channelName,
       type: "line",
-      data: dataBuffer.current.channels[channel],
+      data: dataBuffer.current.channels[channelName],
       showSymbol: false,
       smooth: true,
       lineStyle: {
         width: 2,
         color: `hsl(${idx * 45}, 70%, 50%)`,
       },
-      animation: false, // Disable per-series animation
+      animation: false,
     })),
     animation: {
-      duration: 500, // Duration of the initial animation
+      duration: 500,
       easing: "linear",
     },
   };
@@ -132,7 +136,7 @@ const EEGGraph = () => {
     <ReactECharts
       ref={chartRef}
       option={initialOption}
-      notMerge={false} // Enable merging to allow smooth updates
+      notMerge={false}
       lazyUpdate={true}
       style={{ height: "500px", width: "100%" }}
     />
