@@ -136,12 +136,13 @@ class EEG:
         if all_data:
             all_data_df = pd.concat(all_data, ignore_index=True)
             
-            if all_data_df.columns.duplicated().any():
-                print("Duplicate columns detected: ", all_data_df.columns[all_data_df.columns.duplicated()])
-            all_data_df = all_data_df.loc[:, ~all_data_df.columns.duplicated()]
+            # Set the columns to self.col_names for consistency
+            all_data_df.columns = self.col_names
 
+            # Convert to JSON and return it
             all_data_json = all_data_df.to_json(orient='records')
             return all_data_json
+        
         else:
             print("No data collected to convert to JSON.")
             return None

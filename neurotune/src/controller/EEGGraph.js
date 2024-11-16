@@ -1,29 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
 
-const SOCKET_SERVER_URL = "http://127.0.0.1:5000/"; // Update if different
+const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
 const EEGGraph = () => {
   const socketRef = useRef();
-  const chartRef = useRef();
+  const [echartsInstance, setEchartsInstance] = useState(null);
 
   const channelNames = ["ch1 - AF7", "ch2 - AF8", "ch3 - TP9", "ch4 - TP10"];
 
-  // Initialize data storage
   const dataBuffer = useRef({
-    timestamps: [],
+    timestamp: [],
     channels: channelNames.reduce((acc, channelName) => {
       acc[channelName] = [];
       return acc;
     }, {}),
   });
 
-  // Flag to control when to update the chart
   const updatePending = useRef(false);
 
   useEffect(() => {
-    // Establish WebSocket connection
     socketRef.current = io(SOCKET_SERVER_URL);
 
     socketRef.current.on("connect", () => {
@@ -31,42 +28,56 @@ const EEGGraph = () => {
     });
 
     socketRef.current.on("eeg_data", (eegDataArray) => {
-      // Log the received data to inspect its structure
       console.log("Received EEG Data:", eegDataArray);
 
-      // Ensure eegDataArray is an array
       if (Array.isArray(eegDataArray)) {
         eegDataArray.forEach((dataPoint) => {
-          const { timestamp } = dataPoint;
-          const timeString = new Date(timestamp * 1000).toLocaleTimeString();
+          // Ensure timestamp and other properties exist before processing
+          if (dataPoint && dataPoint.timestamp) {
+            const { timestamp } = dataPoint;
+            const timeString = new Date(timestamp * 1000).toLocaleTimeString();
 
-          dataBuffer.current.timestamps.push(timeString);
+            dataBuffer.current.timestamp.push(timeString);
 
-          channelNames.forEach((channelName) => {
-            dataBuffer.current.channels[channelName].push(dataPoint[channelName]);
-          });
+            channelNames.forEach((channelName) => {
+              if (dataPoint.hasOwnProperty(channelName)) {
+                dataBuffer.current.channels[channelName].push(
+                  dataPoint[channelName]
+                );
+              }
+            });
+          } else {
+            console.error("Data point is missing timestamp:", dataPoint);
+          }
         });
       } else {
-        // Handle case when eegDataArray is not an array
         console.error("Expected an array but received:", eegDataArray);
-        // If it's an object with a single data point, handle it here:
-        if (eegDataArray.timestamp) {
+
+        if (eegDataArray && eegDataArray.timestamp) {
           const { timestamp } = eegDataArray;
           const timeString = new Date(timestamp * 1000).toLocaleTimeString();
 
-          dataBuffer.current.timestamps.push(timeString);
+          dataBuffer.current.timestamp.push(timeString);
 
           channelNames.forEach((channelName) => {
-            dataBuffer.current.channels[channelName].push(eegDataArray[channelName]);
+            if (eegDataArray.hasOwnProperty(channelName)) {
+              dataBuffer.current.channels[channelName].push(
+                eegDataArray[channelName]
+              );
+            }
           });
+        } else {
+          console.error(
+            "Received data is missing timestamp or is invalid:",
+            eegDataArray
+          );
         }
       }
 
-      // Maintain only the latest 600 data points (3 seconds at 200 Hz)
-      const maxDataPoints = 600;
-      if (dataBuffer.current.timestamps.length > maxDataPoints) {
-        const excess = dataBuffer.current.timestamps.length - maxDataPoints;
-        dataBuffer.current.timestamps.splice(0, excess);
+      const maxDataPoints = 400;
+      if (dataBuffer.current.timestamp.length > maxDataPoints) {
+        const excess = dataBuffer.current.timestamp.length - maxDataPoints;
+        dataBuffer.current.timestamp.splice(0, excess);
         for (let key in dataBuffer.current.channels) {
           if (dataBuffer.current.channels.hasOwnProperty(key)) {
             dataBuffer.current.channels[key].splice(0, excess);
@@ -74,25 +85,26 @@ const EEGGraph = () => {
         }
       }
 
-      // Throttle chart updates using requestAnimationFrame
       if (!updatePending.current) {
         updatePending.current = true;
         requestAnimationFrame(() => {
-          if (chartRef.current) {
+          if (echartsInstance) {
             const option = {
               xAxis: {
-                data: dataBuffer.current.timestamps,
+                data: dataBuffer.current.timestamp,
               },
               series: channelNames.map((channelName) => ({
                 name: channelName,
                 data: dataBuffer.current.channels[channelName],
               })),
             };
-            chartRef.current.getEchartsInstance().setOption(option, {
+            echartsInstance.setOption(option, {
               notMerge: false,
               lazyUpdate: true,
               silent: true,
             });
+          } else {
+            console.log("echartsInstance is null");
           }
           updatePending.current = false;
         });
@@ -106,9 +118,8 @@ const EEGGraph = () => {
     return () => {
       socketRef.current.disconnect();
     };
-  }, []);
+  }, []); // Dependency array corrected
 
-  // Initial chart options
   const initialOption = {
     title: {
       text: "Live EEG Data Visualization",
@@ -129,7 +140,7 @@ const EEGGraph = () => {
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: dataBuffer.current.timestamps,
+      data: dataBuffer.current.timestamp,
     },
     yAxis: {
       type: "value",
@@ -146,19 +157,21 @@ const EEGGraph = () => {
       },
       animation: false,
     })),
-    animation: {
-      duration: 500,
-      easing: "linear",
-    },
+    animation: false, // Corrected animation property
+    animationDuration: 500,
+    animationEasing: "linear",
   };
 
   return (
     <ReactECharts
-      ref={chartRef}
       option={initialOption}
       notMerge={false}
       lazyUpdate={true}
       style={{ height: "500px", width: "100%" }}
+      onChartReady={(instance) => {
+        console.log("Chart is ready, instance:", instance);
+        setEchartsInstance(instance);
+      }}
     />
   );
 };
