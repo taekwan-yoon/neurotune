@@ -52,6 +52,9 @@ def main():
     features_csv = f"{processed_csv.replace('.csv', '_processed')}.csv"
     output_json = f"{features_csv.replace('.csv', '_predictions.json')}"
     
+    # Define the period parameter
+    period = 3.0  # You can change this value as needed
+
     overall_start_time = time.time()
     
     try:
@@ -69,7 +72,7 @@ def main():
         # Step 2: Preprocess Data to Extract Features
         print("\n--- Step 2: Preprocessing Data ---")
         step_start_time = time.time()
-        run_script('preprocessData.py', [processed_csv])
+        run_script('preprocessData.py', [processed_csv, str(period)])
         step_duration = time.time() - step_start_time
         print(f"Step 2 completed in {step_duration:.2f} seconds.")
         

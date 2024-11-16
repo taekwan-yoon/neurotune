@@ -497,11 +497,12 @@ def extract_features_from_csv(file_path, nsamples=100, period=2.0,
     return feature_vector, feature_names
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python preprocessData.py <path_to_input_csv>")
+    if len(sys.argv) != 3:
+        print("Usage: python preprocessData.py <path_to_input_csv> <period>")
         sys.exit(1)
 
     input_file_path = sys.argv[1]
+    period = float(sys.argv[2])
 
     if not os.path.isfile(input_file_path):
         print(f"Error: File '{input_file_path}' does not exist.")
@@ -509,7 +510,7 @@ def main():
 
     # Define parameters
     nsamples = 100       # Number of samples for resampling
-    period = 2.0         # 2-second time window
+    # period is now received from command-line arguments
     remove_redundant = True
     cols_to_ignore = None  # List of column indices to ignore, if any
 

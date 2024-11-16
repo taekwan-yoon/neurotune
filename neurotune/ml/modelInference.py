@@ -90,7 +90,7 @@ def parse_arguments(script_dir):
     
     # Set default paths relative to the script's directory
     default_scaler = os.path.join(script_dir, 'scaler.save')
-    default_model = os.path.join(script_dir, 'best_cnn_model_2sec.keras')
+    default_model = os.path.join(script_dir, 'best_cnn_model_5sec.keras')
     
     parser.add_argument("--scaler", type=str, default=default_scaler,
                         help=f"Path to the scaler file (default: {default_scaler}).")
