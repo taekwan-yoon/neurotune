@@ -7,6 +7,7 @@ import OutputContainer from "./view/OutputContainer";
 function App() {
   return (
     <div className="app-container">
+      <h1 className="neurotune-title">NeuroTune</h1>
       <MusicContainer />
       <EEGContainer />
       <OutputContainer />
