@@ -1,0 +1,14 @@
+/* EEGGraph.css */
+
+/* Import button styles */
+@import "../MacButton.css";
+
+.eeg-graph-container {
+  width: 100%;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}

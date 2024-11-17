@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
+import OutputGraph from "./OutputGraph";
+import EmotionBars from "./StyleOutput";
+import "./EEGGraph.css";
 
 const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
 const EEGGraph = () => {
+  const [output, setOutput] = useState([]);
   const socketRef = useRef();
   const [echartsInstance, setEchartsInstance] = useState(null);
   const [EEG_data, setEEGData] = useState(null); // To store incoming EEG data
@@ -44,6 +48,10 @@ const EEGGraph = () => {
         processEEGData(msg); // Process the EEG data for chart update
       });
 
+      socketRef.current.on("output_data", (result) => {
+        setOutput(result);
+      });
+
       socketRef.current.on("disconnect", () => {
         console.log("Disconnected from WebSocket server");
       });
@@ -53,7 +61,7 @@ const EEGGraph = () => {
   // Function to stop EEG recording (disconnect the socket)
   const stopEEG = () => {
     if (socketRef.current) {
-      socketRef.current.emit('stop_eeg');
+      socketRef.current.emit("stop_eeg");
       socketRef.current.disconnect();
       socketRef.current = null; // Reset the ref to null
     }
@@ -81,7 +89,9 @@ const EEGGraph = () => {
 
           channelNames.forEach((channelName) => {
             if (dataPoint.hasOwnProperty(channelName)) {
-              dataBuffer.current.channels[channelName].push(dataPoint[channelName]);
+              dataBuffer.current.channels[channelName].push(
+                dataPoint[channelName]
+              );
             } else {
               console.warn(`Data point is missing channel ${channelName}`);
             }
@@ -136,9 +146,6 @@ const EEGGraph = () => {
   };
 
   const initialOption = {
-    title: {
-      text: "Live EEG Data Visualization",
-    },
     tooltip: {
       trigger: "axis",
     },
@@ -178,10 +185,15 @@ const EEGGraph = () => {
   };
 
   return (
-    <div>
-      <h1>Live EEG Data Visualization</h1>
-      <button onClick={startEEG}>Start Recording</button>
-      <button onClick={stopEEG}>Stop Recording</button>
+    <div className="eeg-graph-container">
+      <div className="button-group">
+        <button className="mac-button" onClick={startEEG}>
+          Start Recording
+        </button>
+        <button className="mac-button" onClick={stopEEG}>
+          Stop Recording
+        </button>
+      </div>
       <ReactECharts
         option={initialOption}
         notMerge={false}
@@ -192,6 +204,7 @@ const EEGGraph = () => {
           setEchartsInstance(instance);
         }}
       />
+      <EmotionBars msg={output} />
     </div>
   );
 };

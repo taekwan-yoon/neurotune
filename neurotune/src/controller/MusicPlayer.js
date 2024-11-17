@@ -1,7 +1,7 @@
 import { useYoutube } from "react-youtube-music-player";
 import React, { useState } from "react";
 import axios from "axios";
-import "./Music.css";
+import "./MusicPlayer.css";
 
 const MusicPlayer = () => {
   const [videoId, setVideoId] = useState("RDLbqzhXWl33U");
@@ -59,7 +59,6 @@ const MusicPlayer = () => {
 
   return (
     <div className="music-player-container">
-      <h2>Music Player</h2>
       <input
         type="text"
         className="search-input"
@@ -67,7 +66,7 @@ const MusicPlayer = () => {
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Enter song name"
       />
-      <button className="music-player-button" onClick={searchSong}>
+      <button className="mac-button" onClick={searchSong}>
         Search
       </button>
 
@@ -86,8 +85,12 @@ const MusicPlayer = () => {
 
       {/* Player Action Buttons */}
       <div className="action-buttons">
-        <button onClick={actions.playVideo}>Play</button>
-        <button onClick={actions.pauseVideo}>Pause</button>
+        <button className="mac-button" onClick={actions.playVideo}>
+          Play
+        </button>
+        <button className="mac-button" onClick={actions.pauseVideo}>
+          Pause
+        </button>
       </div>
 
       {/* Modal (Popup) to display search results */}
@@ -108,7 +111,12 @@ const MusicPlayer = () => {
                   />
                   <div className="result-details">
                     <p>{video.snippet.title}</p>
-                    <button onClick={() => selectVideo(video)}>Select</button>
+                    <button
+                      className="mac-button select-button"
+                      onClick={() => selectVideo(video)}
+                    >
+                      Select
+                    </button>
                   </div>
                 </li>
               ))}
