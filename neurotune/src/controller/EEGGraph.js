@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
 import EmotionBars from "./StyleOutput";
-import ImageSlider from "../view/ImageSlider";  // Import ImageSlider
+import ImageSlider from "../view/ImageSlider"; // Import ImageSlider
 import "./EEGGraph.css";
-
 
 const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
@@ -59,13 +58,12 @@ const EEGGraph = () => {
         setTimeout(() => {
           setIsModalOpen(true);
         }, 3000);
-    
       });
     }
   };
 
   const closeModal = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
 
   // Function to stop EEG recording (disconnect the socket)
@@ -195,36 +193,31 @@ const EEGGraph = () => {
   };
 
   return (
-
     <div>
-      <h1>Live EEG Data Visualization</h1>
-      <button onClick={startEEG}>Start Recording</button>
-      <button onClick={stopEEG}>Stop Recording</button>
-      
       {/* Modal for Image Slider */}
-      {isModalOpen && <ImageSlider closeModal={closeModal} />}  {/* Show ImageSlider when modal is open */}
-      
-
-    <div className="eeg-graph-container">
-      <div className="button-group">
-        <button className="mac-button" onClick={startEEG}>
-          Start Recording
-        </button>
-        <button className="mac-button" onClick={stopEEG}>
-          Stop Recording
-        </button>
+      {isModalOpen && <ImageSlider closeModal={closeModal} />}{" "}
+      {/* Show ImageSlider when modal is open */}
+      <div className="eeg-graph-container">
+        <div className="button-group">
+          <button className="mac-button" onClick={startEEG}>
+            Start Recording
+          </button>
+          <button className="mac-button" onClick={stopEEG}>
+            Stop Recording
+          </button>
+        </div>
+        <ReactECharts
+          option={initialOption}
+          notMerge={false}
+          lazyUpdate={true}
+          style={{ height: "500px", width: "100%" }}
+          onChartReady={(instance) => {
+            console.log("Chart is ready, instance:", instance);
+            setEchartsInstance(instance);
+          }}
+        />
+        <EmotionBars msg={output} />
       </div>
-      <ReactECharts
-        option={initialOption}
-        notMerge={false}
-        lazyUpdate={true}
-        style={{ height: "500px", width: "100%" }}
-        onChartReady={(instance) => {
-          console.log("Chart is ready, instance:", instance);
-          setEchartsInstance(instance);
-        }}
-      />
-      <EmotionBars msg={output} />
     </div>
   );
 };

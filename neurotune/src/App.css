@@ -80,3 +80,9 @@
     transform: scaleX(1);
   }
 }
+
+/* Brain icon styling */
+.brain-icon {
+  font-size: 0.8em;
+  color: #e0d800; /* Subtle accent color */
+}
