@@ -1,8 +1,9 @@
+// App.js
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MusicContainer from "./view/MusicContainer";
 import EEGContainer from "./view/EEGContainer";
-import OutputContainer from "./view/OutputContainer";
+import OutputContainer from "./controller/obsolete/OutputContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBrain } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,6 +17,14 @@ function App() {
         </span>
         Tune ♪
       </h1>
+      <h3 className="neurotune-subtitle">
+        Think your music
+        <span className="dots">
+          <span>.</span>
+          <span>.</span>
+          <span>.</span>
+        </span>
+      </h3>
       <MusicContainer />
       <EEGContainer />
       <OutputContainer />
