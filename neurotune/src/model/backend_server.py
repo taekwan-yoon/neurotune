@@ -5,6 +5,7 @@ import time
 import threading
 import subprocess
 import json
+import os
 
 from eeg.eeg import EEG
 from eeg.eeg_analysis import run_anlaysis
@@ -84,12 +85,14 @@ class BackendServer:
         eeg_object.stop_board()
         final_file_path = f"{"User"}_{"final"}_{1}.csv"
         run_anlaysis(final_file_path)
+        final_file_path
+        if os.path.exists(final_file_path):
+            os.remove(final_file_path)
         
     def run(self):
         # Run the Flask server with SocketIO
         self.socketio.run(self.app, port=5000)
 
-    
     def get_output_data(self):
         # make json file that contains ML output from csv file
         print("getting output data...")

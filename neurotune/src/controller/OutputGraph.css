@@ -1,0 +1,296 @@
+/* Overall container for the emotion bars */
+.w-full {
+    width: 100%;
+  }
+  
+  .max-w-md {
+    max-width: 28rem; /* 448px */
+  }
+  
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .p-8 {
+    padding: 2rem;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .bg-white {
+    background-color: white;
+  }
+  
+  .rounded-xl {
+    border-radius: 1rem;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Styling for the emotion bar container */
+  .relative {
+    position: relative;
+  }
+  
+  .p-6 {
+    padding: 1.5rem;
+  }
+  
+  .bg-gray-50 {
+    background-color: #f9fafb;
+  }
+  
+  .rounded-xl {
+    border-radius: 1rem;
+  }
+  
+  /* Flexbox container for positioning the bars */
+  .flex {
+    display: flex;
+  }
+  
+  .justify-between {
+    justify-content: space-between;
+  }
+  
+  .items-end {
+    align-items: flex-end;
+  }
+  
+  .h-64 {
+    height: 16rem; /* 256px */
+  }
+  
+  .space-x-8 > * + * {
+    margin-left: 2rem;
+  }
+  
+  /* Individual emotion bars */
+  .flex-col {
+    flex-direction: column;
+  }
+  
+  .items-center {
+    align-items: center;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .flex-1 {
+    flex: 1;
+  }
+  
+  /* Styling for the bars and icons */
+  .p-3 {
+    padding: 0.75rem;
+  }
+  
+  .transition-all {
+    transition: all 0.3s ease;
+  }
+  
+  .duration-300 {
+    transition-duration: 300ms;
+  }
+  
+  .text-gray-400 {
+    color: #9ca3af;
+  }
+  
+  .hover\:bg-gray-100:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .scale-110 {
+    transform: scale(1.1);
+  }
+  
+  .bg-emerald-500 {
+    background-color: #10b981;
+  }
+  
+  .bg-amber-500 {
+    background-color: #f59e0b;
+  }
+  
+  .bg-rose-500 {
+    background-color: #ef4444;
+  }
+  
+  .text-white {
+    color: white;
+  }
+  
+  .text-emerald-500 {
+    color: #10b981;
+  }
+  
+  .text-amber-500 {
+    color: #f59e0b;
+  }
+  
+  .text-rose-500 {
+    color: #ef4444;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Icon size and transition effects */
+  .w-6 {
+    width: 1.5rem;
+  }
+  
+  .h-6 {
+    height: 1.5rem;
+  }
+  
+  .transition-transform {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover\:scale-110:hover {
+    transform: scale(1.1);
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .mt-1 {
+    margin-top: 0.25rem;
+  }
+  
+  .font-medium {
+    font-weight: 500;
+  }
+  
+  .font-mono {
+    font-family: monospace;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .font-medium {
+    font-weight: 500;
+  }
+  
+  /* Bar height and transition effects */
+  .relative {
+    position: relative;
+  }
+  
+  .w-full {
+    width: 100%;
+  }
+  
+  .h-44 {
+    height: 11rem;
+  }
+  
+  .absolute {
+    position: absolute;
+  }
+  
+  .inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  .bg-gray-200 {
+    background-color: #e5e7eb;
+  }
+  
+  .rounded-xl {
+    border-radius: 1rem;
+  }
+  
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  
+  .absolute {
+    position: absolute;
+  }
+  
+  .bottom-0 {
+    bottom: 0;
+  }
+  
+  .transition-all {
+    transition: all 0.5s ease-out;
+  }
+  
+  .ease-out {
+    transition-timing-function: ease-out;
+  }
+  
+  .opacity-100 {
+    opacity: 1;
+  }
+  
+  .opacity-60 {
+    opacity: 0.6;
+  }
+  
+  .animate-pulse {
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.2;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .w-full {
+    width: 100%;
+  }
+  
+  .h-full {
+    height: 100%;
+  }
+  
+  .opacity-20 {
+    opacity: 0.2;
+  }
+  
+  .font-mono {
+    font-family: monospace;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .font-medium {
+    font-weight: 500;
+  }
+  
+  /* For the percentage text in the emotion bar */
+  .text-gray-400 {
+    color: #9ca3af;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  

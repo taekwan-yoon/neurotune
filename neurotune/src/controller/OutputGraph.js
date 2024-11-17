@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 
-const OutputGraph = (msg) => {
+const OutputGraph = ({ msg }) => {
   const [data, setData] = useState([]);
-    console.log(msg); 
-    console.log("Are you here?")
+  console.log(msg)
+  useEffect(() => {
     if (msg && msg.length > 0) {
-          const item = msg[0];
-          console.log("I am not null")
-          const prediction = item.prediction; // "good", "neutral", or "bad"
-        
-          const index = item.index;
-          const formattedTime = new Date().toLocaleTimeString();
-          const statusToValue = {
-            good: 3,
-            neutral: 2,
-            bad: 1,
-          }
-          const dataPoint = {
-            time: formattedTime,
-            status: prediction,
-            value: statusToValue[prediction] || 0, // Default to 0 if prediction is unrecognized
-          };
-          setData((prevData) => {
-            const newData = [...prevData, dataPoint];
-            return newData.slice(-20); // Keep only the last 20 entries
-          });
-        }
+      const item = msg[0];
+      const prediction = item.prediction; // "good", "neutral", or "bad"
+      const formattedTime = new Date().toLocaleTimeString();
+      const statusToValue = {
+        good: 3,
+        neutral: 2,
+        bad: 1,
+      };
+
+      const dataPoint = {
+        time: formattedTime,
+        status: prediction,
+        value: statusToValue[prediction] || 0, // Default to 0 if prediction is unrecognized
+      };
+
+      setData((prevData) => {
+        const newData = [...prevData, dataPoint];
+        return newData.slice(-20); // Keep only the last 20 entries
+      });
+    }
+  }, [msg]); // Only run when msg changes
 
   const getColor = (status) => {
     switch (status) {
@@ -87,7 +87,7 @@ const OutputGraph = (msg) => {
           />
         </BarChart>
       ) : (
-        <p>{msg}</p>
+        <p>No data received yet.</p>
       )}
     </div>
   );

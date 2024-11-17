@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
 import OutputGraph from "./OutputGraph";
+import EmotionBars from "./StyleOutput";
 
 const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
@@ -200,7 +201,7 @@ const EEGGraph = () => {
           setEchartsInstance(instance);
         }} 
       />
-      <OutputGraph msg ={output}/>
+      <EmotionBars msg = {output}/>
     </div>
   );
 };
