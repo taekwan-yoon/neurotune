@@ -200,6 +200,7 @@ def run_anlaysis(csv):
 
     # Third visualization
     freq_bands(raw,max_time)
+    print("done")
 
 if __name__ == "__main__":
     run_anlaysis("hello")
