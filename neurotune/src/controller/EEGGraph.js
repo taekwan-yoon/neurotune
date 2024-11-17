@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
-import OutputGraph from "./OutputGraph";
 import EmotionBars from "./StyleOutput";
+import ImageSlider from "../view/ImageSlider";  // Import ImageSlider
 
 const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
-
 const EEGGraph = () => {
-  const[output, setOutput] = useState([])
+  const [output, setOutput] = useState([]);
   const socketRef = useRef();
   const [echartsInstance, setEchartsInstance] = useState(null);
   const [EEG_data, setEEGData] = useState(null); // To store incoming EEG data
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   const channelNames = ["ch1 - AF7", "ch2 - AF8", "ch3 - TP9", "ch4 - TP10"];
 
@@ -49,14 +49,21 @@ const EEGGraph = () => {
       });
 
       socketRef.current.on("output_data", (result) => {
-       
-        setOutput(result);    
+        setOutput(result);
       });
 
       socketRef.current.on("disconnect", () => {
         console.log("Disconnected from WebSocket server");
+        setTimeout(() => {
+          setIsModalOpen(true);
+        }, 3000);
+    
       });
     }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); 
   };
 
   // Function to stop EEG recording (disconnect the socket)
@@ -191,6 +198,10 @@ const EEGGraph = () => {
       <h1>Live EEG Data Visualization</h1>
       <button onClick={startEEG}>Start Recording</button>
       <button onClick={stopEEG}>Stop Recording</button>
+      
+      {/* Modal for Image Slider */}
+      {isModalOpen && <ImageSlider closeModal={closeModal} />}  {/* Show ImageSlider when modal is open */}
+      
       <ReactECharts
         option={initialOption}
         notMerge={false}
@@ -199,9 +210,9 @@ const EEGGraph = () => {
         onChartReady={(instance) => {
           console.log("Chart is ready, instance:", instance);
           setEchartsInstance(instance);
-        }} 
+        }}
       />
-      <EmotionBars msg = {output}/>
+      <EmotionBars msg={output} />
     </div>
   );
 };
