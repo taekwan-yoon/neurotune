@@ -9,6 +9,7 @@ const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
 const EEGGraph = () => {
   const [output, setOutput] = useState([]);
+  const [isSaved , setisSaved] = useState(false)
   const socketRef = useRef();
   const [echartsInstance, setEchartsInstance] = useState(null);
   const [EEG_data, setEEGData] = useState(null); // To store incoming EEG data
@@ -57,6 +58,9 @@ const EEGGraph = () => {
         console.log("Disconnected from WebSocket server");
         setTimeout(() => {
           setIsModalOpen(true);
+          if(!isSaved){
+            setisSaved(true)
+          }
         }, 3000);
       });
     }
@@ -195,6 +199,11 @@ const EEGGraph = () => {
   return (
     <div>
       {/* Modal for Image Slider */}
+      {isSaved && (
+        <button className="show-image-button" onClick={() => setIsModalOpen(true)}>
+          View Analysis
+      </button>
+        )}
       {isModalOpen && <ImageSlider closeModal={closeModal} />}{" "}
       {/* Show ImageSlider when modal is open */}
       <div className="eeg-graph-container">
