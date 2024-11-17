@@ -1,0 +1,82 @@
+/* App.css */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: #f7f8fa; /* Light, neutral background for a clean aesthetic */
+}
+
+/* Style for the NeuroTune title */
+.neurotune-title {
+  font-family: "San Francisco", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 4rem;
+  font-weight: 600;
+  color: #333; /* Minimalistic MacOS-inspired text color */
+  margin: 20px 0;
+  text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s forwards ease-in-out;
+  background: linear-gradient(
+    90deg,
+    #007aff,
+    #34c759,
+    #ffcc00,
+    #ff3b30,
+    #007aff
+  ); /* Gradient for subtle EEG-inspired effect */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animation keyframes */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover interaction for h1 */
+.neurotune-title:hover {
+  transform: scale(1.05) rotate(-1deg);
+  text-shadow: 0px 4px 6px rgba(0, 122, 255, 0.3);
+}
+
+/* Subtle EEG wave effect */
+.neurotune-title::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 3px;
+  margin-top: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    #007aff 0%,
+    #34c759 20%,
+    #ffcc00 40%,
+    #ff3b30 60%,
+    #007aff 80%
+  ); /* A vibrant line below the title for EEG waveform inspiration */
+  animation: pulseWave 2s infinite;
+  border-radius: 2px;
+}
+
+/* Wave animation for the line */
+@keyframes pulseWave {
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(1.2);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}

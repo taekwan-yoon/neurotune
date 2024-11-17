@@ -1,0 +1,28 @@
+/* EEGContainer.css */
+.mac-window {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  max-width: 800px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.mac-title-bar {
+  background-color: #f5f5f5;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.mac-title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.mac-content {
+  padding: 20px;
+}

@@ -1,11 +1,18 @@
+import React from "react";
 import MusicPlayer from "../controller/MusicPlayer";
+import "./MusicContainer.css";
 
 const MusicContainer = () => {
   return (
-    <div>
-      <h1>1. Search Music</h1>
-      <MusicPlayer />
+    <div className="mac-window">
+      <div className="mac-title-bar">
+        <div className="mac-title">Music Player</div>
+      </div>
+      <div className="mac-content">
+        <MusicPlayer />
+      </div>
     </div>
   );
 };
+
 export default MusicContainer;

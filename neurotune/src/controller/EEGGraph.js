@@ -3,6 +3,8 @@ import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
 import EmotionBars from "./StyleOutput";
 import ImageSlider from "../view/ImageSlider";  // Import ImageSlider
+import "./EEGGraph.css";
+
 
 const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
@@ -69,7 +71,7 @@ const EEGGraph = () => {
   // Function to stop EEG recording (disconnect the socket)
   const stopEEG = () => {
     if (socketRef.current) {
-      socketRef.current.emit('stop_eeg');
+      socketRef.current.emit("stop_eeg");
       socketRef.current.disconnect();
       socketRef.current = null; // Reset the ref to null
     }
@@ -97,7 +99,9 @@ const EEGGraph = () => {
 
           channelNames.forEach((channelName) => {
             if (dataPoint.hasOwnProperty(channelName)) {
-              dataBuffer.current.channels[channelName].push(dataPoint[channelName]);
+              dataBuffer.current.channels[channelName].push(
+                dataPoint[channelName]
+              );
             } else {
               console.warn(`Data point is missing channel ${channelName}`);
             }
@@ -152,9 +156,6 @@ const EEGGraph = () => {
   };
 
   const initialOption = {
-    title: {
-      text: "Live EEG Data Visualization",
-    },
     tooltip: {
       trigger: "axis",
     },
@@ -194,6 +195,7 @@ const EEGGraph = () => {
   };
 
   return (
+
     <div>
       <h1>Live EEG Data Visualization</h1>
       <button onClick={startEEG}>Start Recording</button>
@@ -202,6 +204,16 @@ const EEGGraph = () => {
       {/* Modal for Image Slider */}
       {isModalOpen && <ImageSlider closeModal={closeModal} />}  {/* Show ImageSlider when modal is open */}
       
+
+    <div className="eeg-graph-container">
+      <div className="button-group">
+        <button className="mac-button" onClick={startEEG}>
+          Start Recording
+        </button>
+        <button className="mac-button" onClick={stopEEG}>
+          Stop Recording
+        </button>
+      </div>
       <ReactECharts
         option={initialOption}
         notMerge={false}

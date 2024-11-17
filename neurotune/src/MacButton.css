@@ -1,0 +1,27 @@
+/* MacButton.css */
+
+.mac-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #000;
+}
+
+.mac-button:hover {
+  background-color: #d0d0d0;
+}
+
+.mac-button:active {
+  background-color: #c0c0c0;
+}
+
+.mac-button:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
