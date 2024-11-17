@@ -88,6 +88,7 @@ class BackendServer:
         final_file_path
         if os.path.exists(final_file_path):
             os.remove(final_file_path)
+        self.socketio.emit('disconnected', "done")
         
     def run(self):
         # Run the Flask server with SocketIO
