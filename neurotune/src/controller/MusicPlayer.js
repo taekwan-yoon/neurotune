@@ -15,7 +15,7 @@ const MusicPlayer = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
   const API_KEY = process.env.REACT_APP_API_KEY;
-  //const API_KEY = "AIzaSyDGFYVG-hBZH76H6L2OA6em0QFy6QEstz4"
+
   // Function to search for a song
   const searchSong = async () => {
     try {
