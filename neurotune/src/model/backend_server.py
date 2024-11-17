@@ -7,6 +7,8 @@ import subprocess
 import json
 
 from eeg.eeg import EEG
+from eeg.eeg_analysis import run_anlaysis
+from eeg.eeg_filter import apply_bandpass_filter
 
 class BackendServer:
     def __init__(self):
@@ -64,19 +66,28 @@ class BackendServer:
         eeg_object = EEG()
         eeg_object.init_params()
         eeg_object.init_board()
-
+        eeg_object.init_stream()
+        togle = True
         while not self.stop:
-            data = eeg_object.start_eeg(1.5)  # Collect EEG data for 1 second
+            data = eeg_object.start_streaming(3)  
+            if(data != None):
+                data = apply_bandpass_filter(data)
+            file_path = f"{"User"}_{"temp"}_{1}.csv"
+            
             self.socketio.emit('eeg_data', data)  # Emit EEG data to frontend
             time.sleep(0.5)
 
             '''
             // [{"ch1 - AF7":325.9210614385,"ch2 - AF8":422.8817076897,"ch3 - TP9":35.1251403838,"ch4 - TP10":197.6649323581,"timestamp":1731732867.2994301319},
             '''
-
+        eeg_object.stop_board()
+        final_file_path = f"{"User"}_{"final"}_{1}.csv"
+        run_anlaysis(final_file_path)
+        
     def run(self):
         # Run the Flask server with SocketIO
         self.socketio.run(self.app, port=5000)
+
     
     def get_output_data(self):
 
@@ -91,9 +102,7 @@ class BackendServer:
             # emit data to frontend
             self.socketio.emit('output_data', data)
             time.sleep(5)
-
-
-
+            
 
 if __name__ == '__main__':
     backend_server = BackendServer()
