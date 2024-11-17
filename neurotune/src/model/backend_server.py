@@ -3,6 +3,8 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 import time
 import threading
+import subprocess
+import json
 
 from eeg.eeg import EEG
 from eeg.eeg_analysis import run_anlaysis
@@ -85,8 +87,22 @@ class BackendServer:
     def run(self):
         # Run the Flask server with SocketIO
         self.socketio.run(self.app, port=5000)
-        
 
+    
+    def get_output_data(self):
+
+        while not self.stop:
+            # make json file that contains ML output from csv file
+            subprocess.run(['python', 'src/model/ml/main.py', 'input_file.csv'])
+
+            # read json file
+            with open('input_file_processed_processed_predictions.json') as f:
+                data = json.load(f)
+
+            # emit data to frontend
+            self.socketio.emit('output_data', data)
+            time.sleep(5)
+            
 
 if __name__ == '__main__':
     backend_server = BackendServer()

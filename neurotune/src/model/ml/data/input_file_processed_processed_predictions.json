@@ -1,0 +1,11 @@
+[
+    {
+        "index": 0,
+        "prediction": "bad",
+        "probabilities": {
+            "bad": 1.0,
+            "neutral": 0.0,
+            "good": 0.0
+        }
+    }
+]

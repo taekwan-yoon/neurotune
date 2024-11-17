@@ -71,10 +71,6 @@ class EEG:
             # Concatenate all collected data once
             if all_data:
                 result_df = pd.concat(all_data, ignore_index=True)
-                result_df.columns = self.col_names
-                self.save_to_csv(result_df)
-                return result_df.to_json(orient='records')
-
             else:
                 print("No data collected during the session.")
                 return None
