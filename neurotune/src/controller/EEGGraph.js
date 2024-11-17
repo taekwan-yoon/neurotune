@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import ReactECharts from "echarts-for-react";
+import OutputGraph from "./OutputGraph";
 
 const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
+
 const EEGGraph = () => {
+  const[output, setOutput] = useState([])
   const socketRef = useRef();
   const [echartsInstance, setEchartsInstance] = useState(null);
   const [EEG_data, setEEGData] = useState(null); // To store incoming EEG data
@@ -42,6 +45,11 @@ const EEGGraph = () => {
         console.log("Received EEG Data:", msg);
         setEEGData(msg); // Store received EEG data
         processEEGData(msg); // Process the EEG data for chart update
+      });
+
+      socketRef.current.on("output_data", (result) => {
+       
+        setOutput(result);    
       });
 
       socketRef.current.on("disconnect", () => {
@@ -190,8 +198,9 @@ const EEGGraph = () => {
         onChartReady={(instance) => {
           console.log("Chart is ready, instance:", instance);
           setEchartsInstance(instance);
-        }}
+        }} 
       />
+      <OutputGraph msg ={output}/>
     </div>
   );
 };

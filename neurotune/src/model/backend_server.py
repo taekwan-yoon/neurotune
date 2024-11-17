@@ -9,6 +9,7 @@ import json
 from eeg.eeg import EEG
 from eeg.eeg_analysis import run_anlaysis
 from eeg.eeg_filter import apply_bandpass_filter
+from ml.main import inference
 
 class BackendServer:
     def __init__(self):
@@ -72,9 +73,9 @@ class BackendServer:
             data = eeg_object.start_streaming(3)  
             if(data != None):
                 data = apply_bandpass_filter(data)
-            file_path = f"{"User"}_{"temp"}_{1}.csv"
-            
-            self.socketio.emit('eeg_data', data)  # Emit EEG data to frontend
+            # file_path = f"{"User"}_{"temp"}_{1}.csv"
+            self.socketio.emit('eeg_data', data)
+            self.get_output_data()
             time.sleep(0.5)
 
             '''
@@ -90,18 +91,15 @@ class BackendServer:
 
     
     def get_output_data(self):
-
-        while not self.stop:
-            # make json file that contains ML output from csv file
-            subprocess.run(['python', 'src/model/ml/main.py', 'input_file.csv'])
-
-            # read json file
-            with open('input_file_processed_processed_predictions.json') as f:
-                data = json.load(f)
-
-            # emit data to frontend
-            self.socketio.emit('output_data', data)
-            time.sleep(5)
+        # make json file that contains ML output from csv file
+        print("getting output data...")
+        inference('input_file.csv')
+        # read json file
+        with open('input_file_predictions.json') as f:
+            data = json.load(f)
+        # emit data to frontend
+        self.socketio.emit('output_data', data)
+        time.sleep(0.5)
             
 
 if __name__ == '__main__':

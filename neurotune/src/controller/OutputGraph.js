@@ -1,67 +1,32 @@
-// OutputGraph.js
-import React, { useState, useRef, useEffect } from "react";
-import { io } from "socket.io-client";
+import React, { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
-const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
-
-const OutputGraph = () => {
-  const socketRef = useRef();
+const OutputGraph = (msg) => {
   const [data, setData] = useState([]);
-
-  useEffect(() => {
-    if (!socketRef.current) {
-      socketRef.current = io(SOCKET_SERVER_URL);
-
-      socketRef.current.on("connect", () => {
-        console.log("Connected to WebSocket server");
-      });
-
-      socketRef.current.on("output_data", (msg) => {
-        console.log("Received Output Data: ", msg);
-
-        // Check if msg is an array with at least one element
-        if (msg && Array.isArray(msg) && msg.length > 0) {
+    console.log(msg); 
+    console.log("Are you here?")
+    if (msg && msg.length > 0) {
           const item = msg[0];
+          console.log("I am not null")
           const prediction = item.prediction; // "good", "neutral", or "bad"
+        
           const index = item.index;
-
-          // Get the current time as a formatted string
           const formattedTime = new Date().toLocaleTimeString();
-
-          // Map prediction to a numerical value
           const statusToValue = {
             good: 3,
             neutral: 2,
             bad: 1,
-          };
-
+          }
           const dataPoint = {
             time: formattedTime,
             status: prediction,
             value: statusToValue[prediction] || 0, // Default to 0 if prediction is unrecognized
           };
-
           setData((prevData) => {
             const newData = [...prevData, dataPoint];
             return newData.slice(-20); // Keep only the last 20 entries
           });
-        } else {
-          console.error("Invalid data format received:", msg);
         }
-      });
-
-      socketRef.current.on("disconnect", () => {
-        console.log("Disconnected from WebSocket server");
-      });
-    }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, []);
 
   const getColor = (status) => {
     switch (status) {
@@ -122,7 +87,7 @@ const OutputGraph = () => {
           />
         </BarChart>
       ) : (
-        <p>No data received yet.</p>
+        <p>{msg}</p>
       )}
     </div>
   );

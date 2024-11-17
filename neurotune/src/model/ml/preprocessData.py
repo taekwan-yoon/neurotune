@@ -10,6 +10,93 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+
+def extract_features_from_df(df, period):
+    """
+    Extracts statistical features from the DataFrame for the entire time window.
+
+    Parameters:
+    - df (pd.DataFrame): The processed DataFrame.
+    - period (float): Duration of the time window in seconds.
+
+    Returns:
+    - feature_vector (np.ndarray): Array of extracted features.
+    - feature_names (list): List of feature names.
+    """
+    # Ensure required columns are present
+    columns_to_check = ['ch1 - AF7', 'ch2 - AF8', 'ch3 - TP9', 'ch4 - TP10']
+    missing_columns = [col for col in columns_to_check if col not in df.columns]
+    if missing_columns:
+        print(f"The following required columns are missing from the data: {missing_columns}")
+        return None, None
+
+    # Remove rows where all specified channels are zero
+    df = df[~(df[columns_to_check] == 0).all(axis=1)]
+
+    if df.empty:
+        print("DataFrame is empty after filtering zero rows.")
+        return None, None
+
+    # Reset timestamps to start from zero and increment accordingly
+    sampling_rate = 100  # 100 Hz
+    df['timestamp'] = np.arange(len(df)) / sampling_rate
+
+    # Extract time and signal data
+    time_column = df['timestamp'].values
+    signal_data = df[columns_to_check].values
+    full_matrix = np.column_stack((time_column, signal_data))
+
+    # Check duration
+    duration = full_matrix[-1, 0] - full_matrix[0, 0]
+    print(f"Window duration: {duration:.6f} seconds.")
+    if duration < 0.9 * period:
+        print(f"Duration {duration:.6f} is less than 90% of period {period}. Processing with available data.")
+
+    # Perform the resampling of the vector
+    nsamples = 100  # Number of samples for resampling
+    try:
+        ry, rx = scipy.signal.resample(full_matrix[:, 1:], num=nsamples, t=full_matrix[:, 0], axis=0)
+    except Exception as e:
+        print(f"Resampling failed: {e}")
+        return None, None
+
+    # Compute the feature vector
+    if ry.size == 0:
+        print("Resampling resulted in empty data. Skipping this window.")
+        return None, None
+
+    r, headers = calc_feature_vector(ry)
+    if r.size == 0:
+        print("Feature vector is empty. Skipping this window.")
+        return None, None
+
+    # Remove redundant features
+    remove_redundant = True
+    if remove_redundant and headers:
+        # Define prefixes of features to remove
+        to_rm = ["mean_q3_", "mean_q4_", "mean_d_q3q4_",
+                 "max_q3_", "max_q4_", "max_d_q3q4_",
+                 "min_q3_", "min_q4_", "min_d_q3q4_"]
+
+        # Identify indices to remove
+        indices_to_remove = []
+        for rm_prefix in to_rm:
+            for i, name in enumerate(headers):
+                if name.startswith(rm_prefix):
+                    indices_to_remove.append(i)
+
+        # Remove duplicates and sort
+        indices_to_remove = sorted(list(set(indices_to_remove)))
+
+        # Remove from feature names and feature vector
+        if indices_to_remove:
+            r = np.delete(r, indices_to_remove)
+            headers = [name for i, name in enumerate(headers) if i not in indices_to_remove]
+            print(f"Removed {len(indices_to_remove)} redundant features.")
+
+    return r, headers
+
+
 def matrix_from_csv_file(file_path):
     """
     Returns the data matrix given the path of a CSV file.
@@ -355,15 +442,7 @@ def feature_fft(matrix, period=2.0, mains_f=50.,
 
 def calc_feature_vector(matrix):
     """
-    Calculates all previously defined features and concatenates everything into
-    a single feature vector.
-
-    Parameters:
-        matrix (numpy.ndarray): Resampled signal matrix (samples x channels).
-
-    Returns:
-        numpy.ndarray: Feature vector.
-        list: Feature names.
+    Calculates all features and concatenates them into a single feature vector.
     """
     var_names = []
     var_values = np.array([])
@@ -415,58 +494,47 @@ def calc_feature_vector(matrix):
 
     return var_values, var_names
 
-def extract_features_from_csv(file_path, nsamples=100, period=2.0,
-                              remove_redundant=True,
-                              cols_to_ignore=None):
+def extract_features_from_csv(file_path, period, output_features_path):
     """
     Reads data from a CSV file and extracts statistical features for the entire time window.
-
-    Parameters:
-        file_path (str): Path to the CSV file.
-        nsamples (int): Number of samples for resampling.
-        period (float): Duration of the time window in seconds.
-        remove_redundant (bool): Whether to remove redundant features.
-        cols_to_ignore (list or None): List of column indices to ignore.
-
-    Returns:
-        numpy.ndarray: Feature vector (1 x num_features).
-        list: Feature names.
     """
     # Read the matrix from file
     full_matrix = matrix_from_csv_file(file_path)
-    #print(f"Total samples after filtering: {full_matrix.shape[0]}")
+    print(f"Total samples after filtering: {full_matrix.shape[0]}")
 
     # Check duration
     if full_matrix.shape[0] == 0:
         print("Empty matrix after filtering. Skipping feature extraction.")
-        return np.array([]), []
+        sys.exit(1)
 
     duration = full_matrix[-1, 0] - full_matrix[0, 0]
-    #print(f"Window duration: {duration:.6f} seconds.")
+    print(f"Window duration: {duration:.6f} seconds.")
     if duration < 0.9 * period:
         print(f"Duration {duration:.6f} is less than 90% of period {period}. Processing with available data.")
 
     # Perform the resampling of the vector
+    nsamples = 100  # Number of samples for resampling
     try:
         ry, rx = scipy.signal.resample(full_matrix[:, 1:], num=nsamples, t=full_matrix[:, 0], axis=0)
     except Exception as e:
         print(f"Resampling failed: {e}")
-        return np.array([]), []
+        sys.exit(1)
 
     # Compute the feature vector
     if ry.size == 0:
         print("Resampling resulted in empty data. Skipping this window.")
-        return np.array([]), []
+        sys.exit(1)
 
     r, headers = calc_feature_vector(ry)
     if r.size == 0:
         print("Feature vector is empty. Skipping this window.")
-        return np.array([]), []
+        sys.exit(1)
 
     feature_vector = r
     feature_names = headers
 
-    # Remove redundant features if specified
+    # Remove redundant features
+    remove_redundant = True
     if remove_redundant and feature_names:
         # Define prefixes of features to remove
         to_rm = ["mean_q3_", "mean_q4_", "mean_d_q3q4_",
@@ -492,9 +560,13 @@ def extract_features_from_csv(file_path, nsamples=100, period=2.0,
     # Reshape feature_vector to 2D array (1 x num_features)
     feature_vector = feature_vector.reshape(1, -1)
 
-    #print(f"Feature extraction complete. Extracted {feature_vector.shape[1]} features.")
+    # Convert features to DataFrame
+    df_features = pd.DataFrame(feature_vector, columns=feature_names)
 
-    return feature_vector, feature_names
+    # Save the features to a single CSV file
+    df_features.to_csv(output_features_path, index=False)
+    print(f"Feature extraction complete. Features saved to: {output_features_path}")
+
 
 def main():
     if len(sys.argv) != 3:

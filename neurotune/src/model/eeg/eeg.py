@@ -71,6 +71,9 @@ class EEG:
             # Concatenate all collected data once
             if all_data:
                 result_df = pd.concat(all_data, ignore_index=True)
+                result_df.columns = self.col_names
+                self.save_to_csv(result_df)
+                return result_df.to_json(orient='records')
             else:
                 print("No data collected during the session.")
                 return None
@@ -81,7 +84,7 @@ class EEG:
 
     def save_to_csv(self, data_frame):
         """ Save the collected data to CSV """
-        temp_file = f"{self.name}_temp_{self.number}.csv"
+        temp_file = f"input_file.csv"
         data_frame.to_csv(temp_file, index=True)
 
         final_file = f"{self.name}_{self.flavor}_{self.number}.csv"
