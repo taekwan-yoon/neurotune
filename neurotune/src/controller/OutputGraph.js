@@ -1,3 +1,4 @@
+// OutputGraph.js
 import React, { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
@@ -19,16 +20,16 @@ const OutputGraph = () => {
       socketRef.current.on("output_data", (msg) => {
         console.log("Received Output Data: ", msg);
 
-        if (msg && msg.time && msg.status) {
-          let formattedTime;
-          try {
-            formattedTime = new Date(msg.time).toLocaleTimeString();
-          } catch (error) {
-            console.error("Error parsing time:", error);
-            formattedTime = "Invalid Time";
-          }
+        // Check if msg is an array with at least one element
+        if (msg && Array.isArray(msg) && msg.length > 0) {
+          const item = msg[0];
+          const prediction = item.prediction; // "good", "neutral", or "bad"
+          const index = item.index;
 
-          // Map status to a numerical value
+          // Get the current time as a formatted string
+          const formattedTime = new Date().toLocaleTimeString();
+
+          // Map prediction to a numerical value
           const statusToValue = {
             good: 3,
             neutral: 2,
@@ -37,8 +38,8 @@ const OutputGraph = () => {
 
           const dataPoint = {
             time: formattedTime,
-            status: msg.status,
-            value: statusToValue[msg.status] || 0, // Default to 0
+            status: prediction,
+            value: statusToValue[prediction] || 0, // Default to 0 if prediction is unrecognized
           };
 
           setData((prevData) => {

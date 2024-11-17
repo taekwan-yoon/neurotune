@@ -122,7 +122,7 @@ class EEG:
                 result_df.columns = col_names
         
                 # Save to CSV
-                result_df.to_csv(f"{self.name}_{self.flavor}_{self.number}.csv", index=True)
+                result_df.to_csv(f"input_file.csv", index=True)
 
             else:
                 print("No data collected during the session.")
