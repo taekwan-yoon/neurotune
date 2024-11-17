@@ -29,6 +29,7 @@ const EEGGraph = () => {
     },
     tooltip: {
       trigger: "item",
+      formatter: "{a} <br/>{b}: {c} ({d}%)",
     },
     legend: {
       orient: "vertical",
@@ -39,6 +40,9 @@ const EEGGraph = () => {
         name: "Emotions",
         type: "pie",
         radius: "50%",
+        label: {
+          formatter: "{b}: {d}%", // Display name and percentage
+        },
         data: [
           {
             value: ratio.good || 0,
