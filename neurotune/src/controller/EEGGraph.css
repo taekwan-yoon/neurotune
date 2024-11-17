@@ -12,33 +12,83 @@
   gap: 10px;
   margin-bottom: 20px;
 }
+
+.graphs-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.react-echarts-container {
+  flex: 2;
+  margin-right: 10px;
+}
+
+.right-side-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.right-side-container > * {
+  margin-bottom: 20px;
+}
 .show-image-button {
-  background-color: #d0e2f5;  /* Blue background */
-  color: rgb(17, 16, 16);               /* White text */
-  font-size: 14px;            /* Smaller font size */
-  font-weight: 600;           /* Slightly bold text */
-  padding: 5px 10px;          /* Smaller padding for a more compact button */
-  border: none;               /* No border */
-  border-radius: 5px;         /* Rounded corners */
-  cursor: pointer;           /* Pointer cursor on hover */
+  background-color: #d0e2f5; /* Blue background */
+  color: rgb(17, 16, 16); /* White text */
+  font-size: 14px; /* Smaller font size */
+  font-weight: 600; /* Slightly bold text */
+  padding: 5px 10px; /* Smaller padding for a more compact button */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s, transform 0.2s ease; /* Smooth transition effects */
-  position: absolute;         /* Positioning the button absolutely */
-               /* 10px from the top of the container */
-  right: 250px;                /* 10px from the right of the container */
+  position: absolute; /* Positioning the button absolutely */
+  /* 10px from the top of the container */
+  right: 250px; /* 10px from the right of the container */
 }
 
 .show-image-button:hover {
-  background-color: #607388;  /* Darker blue on hover */
+  background-color: #607388; /* Darker blue on hover */
   transform: translateY(-2px); /* Slight upward movement on hover */
 }
 
 .show-image-button:active {
-  background-color: #7e9fc3;  /* Even darker blue on click */
-  transform: translateY(0);    /* Reset movement when clicked */
+  background-color: #7e9fc3; /* Even darker blue on click */
+  transform: translateY(0); /* Reset movement when clicked */
 }
 
 .show-image-button:focus {
-  outline: none;              /* Remove outline on focus */
+  outline: none; /* Remove outline on focus */
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Blue glow when focused */
 }
 
+.emotion-charts-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px; /* Space between EEG graph and emotion charts */
+}
+
+.emotion-bars,
+.pie-chart {
+  flex: 1;
+  margin-right: 20px; /* Space between the two charts */
+}
+
+.pie-chart {
+  margin-right: 0; /* Remove margin from the last item */
+}
+
+@media (max-width: 768px) {
+  /* For smaller screens, stack them vertically */
+  .emotion-charts-container {
+    flex-direction: column;
+  }
+  .emotion-bars,
+  .pie-chart {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}

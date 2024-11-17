@@ -9,13 +9,48 @@ const SOCKET_SERVER_URL = "http://127.0.0.1:5000/";
 
 const EEGGraph = () => {
   const [output, setOutput] = useState([]);
-  const [isSaved , setisSaved] = useState(false)
+  const [isSaved, setisSaved] = useState(false);
   const socketRef = useRef();
   const [echartsInstance, setEchartsInstance] = useState(null);
   const [EEG_data, setEEGData] = useState(null); // To store incoming EEG data
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [ratio, setRatio] = useState({
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  });
 
   const channelNames = ["ch1 - AF7", "ch2 - AF8", "ch3 - TP9", "ch4 - TP10"];
+
+  const pieOption = {
+    title: {
+      text: "Emotion Ratio",
+      left: "center",
+    },
+    tooltip: {
+      trigger: "item",
+    },
+
+    series: [
+      {
+        name: "Emotions",
+        type: "pie",
+        radius: "50%",
+        data: [
+          { value: ratio.good, name: "Good" },
+          { value: ratio.neutral, name: "Neutral" },
+          { value: ratio.bad, name: "Bad" },
+        ],
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
+        },
+      },
+    ],
+  };
 
   const dataBuffer = useRef({
     timestamp: [],
@@ -52,14 +87,38 @@ const EEGGraph = () => {
 
       socketRef.current.on("output_data", (result) => {
         setOutput(result);
+
+        const prediction = result[0].prediction;
+        switch (prediction) {
+          case "good":
+            setRatio((prevData) => ({
+              ...prevData,
+              good: prevData.good + 1,
+            }));
+            break;
+          case "neutral":
+            setRatio((prevData) => ({
+              ...prevData,
+              neutral: prevData.neutral + 1,
+            }));
+            break;
+          case "bad":
+            setRatio((prevData) => ({
+              ...prevData,
+              bad: prevData.bad + 1,
+            }));
+            break;
+          default:
+            break;
+        }
       });
 
       socketRef.current.on("disconnect", () => {
         console.log("Disconnected from WebSocket server");
         setTimeout(() => {
           setIsModalOpen(true);
-          if(!isSaved){
-            setisSaved(true)
+          if (!isSaved) {
+            setisSaved(true);
           }
         }, 3000);
       });
@@ -200,10 +259,13 @@ const EEGGraph = () => {
     <div>
       {/* Modal for Image Slider */}
       {isSaved && (
-        <button className="show-image-button" onClick={() => setIsModalOpen(true)}>
+        <button
+          className="show-image-button"
+          onClick={() => setIsModalOpen(true)}
+        >
           View Analysis
-      </button>
-        )}
+        </button>
+      )}
       {isModalOpen && <ImageSlider closeModal={closeModal} />}{" "}
       {/* Show ImageSlider when modal is open */}
       <div className="eeg-graph-container">
@@ -215,6 +277,7 @@ const EEGGraph = () => {
             Stop Recording
           </button>
         </div>
+        {/* EEG Graph */}
         <ReactECharts
           option={initialOption}
           notMerge={false}
@@ -225,7 +288,20 @@ const EEGGraph = () => {
             setEchartsInstance(instance);
           }}
         />
-        <EmotionBars msg={output} />
+        {/* Container for EmotionBars and Pie Chart */}
+        <div className="emotion-charts-container">
+          <div className="emotion-bars">
+            <EmotionBars msg={output} />
+          </div>
+          <div className="pie-chart">
+            <ReactECharts
+              option={pieOption}
+              notMerge={true}
+              lazyUpdate={true}
+              style={{ height: "400px", width: "100%" }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
