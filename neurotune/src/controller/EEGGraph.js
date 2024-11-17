@@ -30,16 +30,27 @@ const EEGGraph = () => {
     tooltip: {
       trigger: "item",
     },
-
+    legend: {
+      orient: "vertical",
+      left: "left",
+    },
     series: [
       {
         name: "Emotions",
         type: "pie",
         radius: "50%",
         data: [
-          { value: ratio.good, name: "Good" },
-          { value: ratio.neutral, name: "Neutral" },
-          { value: ratio.bad, name: "Bad" },
+          {
+            value: ratio.good || 0,
+            name: "Good",
+            itemStyle: { color: "green" },
+          },
+          {
+            value: ratio.neutral || 0,
+            name: "Neutral",
+            itemStyle: { color: "orange" },
+          },
+          { value: ratio.bad || 0, name: "Bad", itemStyle: { color: "red" } },
         ],
         emphasis: {
           itemStyle: {
@@ -89,27 +100,29 @@ const EEGGraph = () => {
         setOutput(result);
 
         const prediction = result[0].prediction;
-        switch (prediction) {
-          case "good":
-            setRatio((prevData) => ({
-              ...prevData,
-              good: prevData.good + 1,
-            }));
-            break;
-          case "neutral":
-            setRatio((prevData) => ({
-              ...prevData,
-              neutral: prevData.neutral + 1,
-            }));
-            break;
-          case "bad":
-            setRatio((prevData) => ({
-              ...prevData,
-              bad: prevData.bad + 1,
-            }));
-            break;
-          default:
-            break;
+        if (prediction) {
+          switch (prediction) {
+            case "good":
+              setRatio((prevData) => ({
+                ...prevData,
+                good: prevData.good + 1,
+              }));
+              break;
+            case "neutral":
+              setRatio((prevData) => ({
+                ...prevData,
+                neutral: prevData.neutral + 1,
+              }));
+              break;
+            case "bad":
+              setRatio((prevData) => ({
+                ...prevData,
+                bad: prevData.bad + 1,
+              }));
+              break;
+            default:
+              break;
+          }
         }
       });
 
