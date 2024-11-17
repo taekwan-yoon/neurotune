@@ -46,7 +46,7 @@ const EEGGraph = () => {
         data: [
           {
             value: ratio.good || 0,
-            name: "Good",
+            name: "Liked",
             itemStyle: { color: "green" },
           },
           {
@@ -54,7 +54,11 @@ const EEGGraph = () => {
             name: "Neutral",
             itemStyle: { color: "orange" },
           },
-          { value: ratio.bad || 0, name: "Bad", itemStyle: { color: "red" } },
+          {
+            value: ratio.bad || 0,
+            name: "Not Liked",
+            itemStyle: { color: "red" },
+          },
         ],
         emphasis: {
           itemStyle: {
